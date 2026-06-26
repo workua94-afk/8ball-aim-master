@@ -2,8 +2,10 @@ package com.shotmaster.pool
 
 import android.app.Application
 import android.util.Log
+import dagger.hilt.android.HiltAndroidApp
 import org.opencv.android.OpenCVLoader
 
+@HiltAndroidApp
 class ShotMasterApp : Application() {
     override fun onCreate() {
         super.onCreate()
