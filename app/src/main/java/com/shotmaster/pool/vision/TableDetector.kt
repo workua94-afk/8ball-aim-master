@@ -2,6 +2,7 @@ package com.shotmaster.pool.vision
 
 import android.graphics.Bitmap
 import android.graphics.Rect
+import android.util.Log
 import org.opencv.android.Utils
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
