@@ -1,0 +1,11 @@
+build/
+.gradle/
+*.apk
+*.jks
+.DS_Store
+.idea/
+*.iml
+*.log
+.settings/
+local.properties
+.vscode/
