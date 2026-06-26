@@ -4,6 +4,11 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.8.22" apply false
 }
 
+repositories {
+    google()
+    mavenCentral()
+}
+
 tasks.register("clean") {
     doLast {
         delete(rootProject.buildDir)

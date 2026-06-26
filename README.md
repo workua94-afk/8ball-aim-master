@@ -1,18 +1,18 @@
-# Shot Master — Starter scaffold
+# Shot Master — Updated with OpenCV integration
 
-This repository contains a starter Android app scaffold for "Shot Master" (8 Ball Pool aiming overlay).
+I added OpenCV (org.opencv:opencv:4.9.0) to the app module and implemented a real TableDetector using OpenCV image processing.
 
-Quick start:
-1. Open the project in Android Studio (Arctic Fox or newer).
-2. Add an OpenCV Android module (or jitpack/maven dependency) and enable `implementation(project(":opencv"))` in app/build.gradle.kts.
-3. Add Hilt plugin & annotate Application if using DI.
-4. Run on a physical device (MediaProjection is not available on emulator).
-5. Grant overlay permission (Settings → Draw over other apps) and then press "Start Overlay" to allow screen capture. The overlay service will start and show a small preview in the corner.
+What's new:
+- settings.gradle.kts now configures mavenCentral() and plugin repositories
+- app/build.gradle.kts includes the OpenCV Maven artifact and repositories
+- ShotMasterApp initializes OpenCV on application start
+- TableDetector (vision) implemented using HSV masking + morphology + contour selection
 
-Important TODOs:
-- Implement OpenCV detectors inside `vision/` (TableDetector, GuidelineDetector, BallDetector).
-- Implement ShotCalculator and GuidelinePainter for actual drawing.
-- Add Compose UI screens, settings persistence, billing flow per the build prompt.
-- Add privacy policy & disclaimers on onboarding.
+Next steps (I'll continue implementing these in sequence):
+1. GuidelineDetector (Hough lines) and BallDetector (Hough circles)
+2. ShotCalculator math and clipping
+3. GuidelinePainter drawing in OverlayView
+4. Floating control widget behavior and mode switching
+5. Compose UI, DataStore, Hilt wiring, BillingManager
 
-Privacy note: the current skeleton does not save or transmit screenshots. The real implementation must keep all processing local and declare this in your privacy policy.
+If you want me to continue, I'll implement GuidelineDetector and BallDetector next and wire them into the OverlayService processing pipeline (CV dispatcher).

@@ -1,3 +1,4 @@
+// Updated app-level Gradle to include OpenCV artifact
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -34,6 +35,11 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+    google()
+}
+
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
@@ -52,4 +58,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    // OpenCV Android AAR from Maven Central
+    implementation("org.opencv:opencv:4.9.0")
 }
