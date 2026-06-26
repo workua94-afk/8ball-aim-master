@@ -12,12 +12,16 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 
 class MainActivity : ComponentActivity() {
@@ -34,13 +38,13 @@ class MainActivity : ComponentActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             val intent = result.data ?: return@registerForActivityResult
             mediaProjection = mediaProjectionManager.getMediaProjection(result.resultCode, intent)
-            // start overlay service with the projection
+            // Start overlay service with the projection
             val svc = Intent(this, OverlayService::class.java).apply {
                 putExtra(OverlayService.EXTRA_START_PROJECTION_INTENT, intent)
                 putExtra(OverlayService.EXTRA_RESULT_CODE, result.resultCode)
             }
             ContextCompat.startForegroundService(this, svc)
-            finish() // optional: close activity to let user play
+            // Keep activity open so user can manage
         }
     }
 
@@ -48,19 +52,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            var hasOverlay by remember { mutableStateOf(checkOverlayPermission()) }
-            Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-                Button(onClick = { ensureOverlayPermission() }) {
-                    Text(if (hasOverlay) "Overlay permission OK" else "Grant overlay permission")
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-                Button(onClick = {
-                    // request MediaProjection
-                    val captureIntent = mediaProjectionManager.createScreenCaptureIntent()
-                    screenCaptureLauncher.launch(captureIntent)
-                }) {
-                    Text("Start Overlay (MediaProjection)")
-                }
+            MaterialTheme {
+                HomeScreenCompose(
+                    onGrantOverlay = { ensureOverlayPermission() },
+                    onStartOverlay = {
+                        if (checkOverlayPermission()) {
+                            val captureIntent = mediaProjectionManager.createScreenCaptureIntent()
+                            screenCaptureLauncher.launch(captureIntent)
+                        } else {
+                            ensureOverlayPermission()
+                        }
+                    }
+                )
             }
         }
     }
@@ -74,9 +77,9 @@ class MainActivity : ComponentActivity() {
     private fun ensureOverlayPermission() {
         if (!checkOverlayPermission()) {
             AlertDialog.Builder(this)
-                .setTitle("Overlay Permission required")
+                .setTitle("Overlay Permission Required")
                 .setMessage("Shot Master needs permission to draw over other apps to show aiming guides.")
-                .setPositiveButton("Open settings") { _, _ ->
+                .setPositiveButton("Open Settings") { _, _ ->
                     val intent = Intent(
                         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:$packageName")
@@ -86,5 +89,86 @@ class MainActivity : ComponentActivity() {
                 .setNegativeButton("Cancel", null)
                 .show()
         }
+    }
+}
+
+@Composable
+fun HomeScreenCompose(
+    onGrantOverlay: () -> Unit,
+    onStartOverlay: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0D1B2A))
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Text(
+            "Shot Master",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF00FF88)
+        )
+
+        Text(
+            "8 Ball Pool Aiming Guide",
+            fontSize = 16.sp,
+            color = Color.White.copy(alpha = 0.7f)
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = onGrantOverlay,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00FF88))
+        ) {
+            Text("Grant Overlay Permission", fontSize = 16.sp, color = Color.Black)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = onStartOverlay,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0099FF))
+        ) {
+            Text("Start Overlay", fontSize = 16.sp, color = Color.White)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { /* TODO: Settings screen */ },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF00FF88))
+        ) {
+            Text("Settings")
+        }
+
+        Button(
+            onClick = { /* TODO: Paywall screen */ },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFFF6600))
+        ) {
+            Text("Go Pro")
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(
+            "Training Aid Only — Not for Competitive Play",
+            fontSize = 12.sp,
+            color = Color.White.copy(alpha = 0.5f),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
     }
 }

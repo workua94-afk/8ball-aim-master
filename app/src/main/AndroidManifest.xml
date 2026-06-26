@@ -12,6 +12,7 @@
     <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
+        android:name=".ShotMasterApp"
         android:allowBackup="true"
         android:label="Shot Master"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
